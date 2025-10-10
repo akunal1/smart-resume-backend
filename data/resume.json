@@ -1,0 +1,391 @@
+{
+  "schema_version": "1.0",
+  "sources": [
+    {
+      "id": "attached_file:1",
+      "filename": "AVINASH-NAYAK-React-Native-01112020-1.pdf",
+      "type": "resume"
+    },
+    {
+      "id": "attached_file:2",
+      "filename": "AVINASH-NAYAK-React-Native-01112020.pdf",
+      "type": "resume"
+    },
+    {
+      "id": "attached_file:3",
+      "filename": "Avinash_Nayak.pdf",
+      "type": "resume"
+    }
+  ],
+  "profile": {
+    "full_name": "Avinash Nayak",
+    "current_titles": ["Web & Mobile Application Developer", "Architect"],
+    "summary": "Developer/architect with international experience building cross-device applications using React Native and React, including the official Australian Open 2020 mobile app, India’s complex indirect tax portal, and digital agriculture solutions.",
+    "location": {
+      "city": "Bengaluru",
+      "state": "Karnataka",
+      "country": "India",
+      "postal_code": "560100",
+      "area": "Electronic City"
+    },
+    "contact": {
+      "phone": "+91 963xxxxx5",
+      "email": "avinash.nayak02@outlook.com",
+      "links": {
+        "linkedin": "https://www.linkedin.com/in/avinash-nayak02/",
+        "github": "https://github.com/akunal1",
+        "website": "https://avinashnayak.in/"
+      }
+    },
+    "personal": {
+      "date_of_birth": "1994-07-08",
+      "languages": ["English", "Hindi", "Odia", "Bengali"],
+      "interests": ["Travelling", "Social Services"],
+      "marital_status": "Single",
+      "religion": "Hindu",
+      "blood_group": "O+"
+    }
+  },
+  "skills": {
+    "primary": [
+      "React",
+      "React Native",
+      "TypeScript",
+      "JavaScript",
+      "Redux",
+      "Redux-Saga",
+      "UX Design (Figma)"
+    ],
+    "secondary": [
+      "Realm",
+      "Ably",
+      "Expo (Managed/Bare)",
+      "Mapbox",
+      "Micro Frontend",
+      "Super App",
+      "Desktop Applications",
+      "Sass",
+      "Bootstrap",
+      "HTML5",
+      "CSS3",
+      "AngularJS",
+      "jQuery",
+      "AJAX",
+      "C",
+      "C++",
+      "Photoshop",
+      "GitHub",
+      "VSTS/Azure DevOps",
+      "VS Code"
+    ],
+    "domains": [
+      "Agriculture",
+      "Sports/Media",
+      "E-commerce/Procurement",
+      "Utilities/Energy",
+      "Government/Tax",
+      "IoT/Home Automation"
+    ],
+    "tools_platforms": ["Agile", "Unit Testing", "Architecture/Design"]
+  },
+  "work_history": [
+    {
+      "company": "AGCO Corporation",
+      "role": "Web & Mobile Application Developer / Architect",
+      "location": "India",
+      "start_date": "2022-10",
+      "end_date": null,
+      "employment_type": "Full-time",
+      "highlights": [
+        "Contributing to digitalization of the agriculture sector with mobile and web solutions.",
+        "Leveraging React Native/React for cross-device applications."
+      ],
+      "tech_stack": [
+        "React Native",
+        "React",
+        "Redux",
+        "Redux-Saga",
+        "TypeScript",
+        "JavaScript",
+        "Realm",
+        "Sync"
+      ]
+    },
+    {
+      "company": "Infosys Limited",
+      "roles": [
+        {
+          "title": "Technology Analyst",
+          "location": "Germany",
+          "start_date": "2020-03",
+          "end_date": "2022-10",
+          "responsibilities": [
+            "Participated in architecture/design decisions and ensured deliverables aligned with architectural requirements.",
+            "Handled onsite coordination with customers and program managers to ensure successful delivery.",
+            "Developed and reviewed code, documentation, and unit tests; ensured readiness for validation/delivery.",
+            "Responded to issues, estimated efforts, implemented solutions/workarounds, and communicated with stakeholders."
+          ]
+        },
+        {
+          "title": "Technology Analyst",
+          "location": "Australia",
+          "start_date": "2019-04",
+          "end_date": "2020-03",
+          "responsibilities": [
+            "Led web/mobile development initiatives supporting direct and indirect purchasing operations.",
+            "Performed impact analysis, high-level design, and created unit test plans for complex modules.",
+            "Contributed to estimation, quality adherence, and SLA compliance."
+          ]
+        },
+        {
+          "title": "Senior Systems Engineer",
+          "location": "India",
+          "start_date": "2017-10",
+          "end_date": "2018-12",
+          "responsibilities": [
+            "Developed ReactJS web apps; created implementation plans and supported go-live activities.",
+            "Performed validation (functional, integration, system, UX) and contributed to performance testing."
+          ]
+        },
+        {
+          "title": "Systems Engineer",
+          "location": "India",
+          "start_date": "2016-02",
+          "end_date": "2017-10",
+          "responsibilities": [
+            "Worked on complex AngularJS-based government tax portal; served as onsite coordinator.",
+            "Prepared and delivered KT sessions; documented understanding and supported transitions."
+          ]
+        },
+        {
+          "title": "Systems Engineer Trainee",
+          "location": "India (Mysore)",
+          "start_date": "2015-10",
+          "end_date": "2016-02",
+          "responsibilities": [
+            "Completed foundational training; received merit recognition for performance."
+          ]
+        }
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "name": "Top American Agricultural Machines Manufacturer (Confidential)",
+      "organization": "Infosys",
+      "domain": "Agriculture",
+      "type": "Mobile app development for provider and customer",
+      "tech_stack": [
+        "React Native",
+        "React-Redux",
+        "Redux-Saga",
+        "Realm",
+        "Sync",
+        "TypeScript"
+      ],
+      "features": ["Offline support", "Cross-device capability"],
+      "contributions": [
+        "Requirements analysis and system requirements documentation.",
+        "Architecture inputs and application build with unit testing."
+      ],
+      "location": "Bengaluru/Australia",
+      "period": "2019-2022"
+    },
+    {
+      "name": "Australian Sports Industry (Australian Open 2020)",
+      "organization": "Infosys",
+      "domain": "Sports/Media",
+      "type": "Mobile app development",
+      "tech_stack": ["React Native", "React-Redux", "Redux-Saga", "Ably"],
+      "features": ["Live game details", "Realtime updates"],
+      "contributions": [
+        "Architecture participation, development, code reviews, and unit testing.",
+        "Production support and SLA-aligned issue resolution."
+      ],
+      "location": "Australia",
+      "period": "2019-2020"
+    },
+    {
+      "name": "Top E-commerce Firm (Australia) – Procurement",
+      "organization": "Infosys",
+      "domain": "E-commerce/Procurement",
+      "type": "Web/mobile development",
+      "tech_stack": [
+        "React",
+        "React-Redux",
+        "Redux-Saga",
+        "JavaScript",
+        "Sass",
+        "Bootstrap"
+      ],
+      "features": ["Support for direct and indirect purchasing operations"],
+      "contributions": [
+        "Impact analysis, design specifications, unit test plans, and delivery quality."
+      ],
+      "location": "Australia",
+      "period": "2019-2020"
+    },
+    {
+      "name": "Largest Subsidiary of Edison International (Utilities)",
+      "organization": "Infosys",
+      "domain": "Utilities/Energy",
+      "type": "Web app development",
+      "tech_stack": [
+        "React",
+        "React-Redux",
+        "Redux-Saga",
+        "JavaScript",
+        "Sass",
+        "Bootstrap"
+      ],
+      "features": ["End-to-end operations management"],
+      "contributions": [
+        "Implementation planning, go-live support, validation, and performance testing."
+      ],
+      "location": "Bengaluru",
+      "period": "2017-2019"
+    },
+    {
+      "name": "India Government – Complex Indirect Tax Portal",
+      "organization": "Infosys",
+      "domain": "Government/Tax",
+      "type": "Complex web application",
+      "tech_stack": ["AngularJS", "Bootstrap", "CSS3"],
+      "features": ["Large-scale portal for indirect tax implementation"],
+      "contributions": [
+        "Onsite coordination, high-level design, unit test planning, KT sessions, and transition support."
+      ],
+      "location": "Bengaluru/India",
+      "period": "2016-2017"
+    },
+    {
+      "name": "IoT Kitchen Monitoring",
+      "organization": "Institute of Technical Education & Research",
+      "domain": "IoT/Home Automation",
+      "type": "Academic/Research Project",
+      "tech_stack": ["Raspberry Pi", "Python", "GSM", "WSN"],
+      "features": ["Embedded web server and remote monitoring"],
+      "period": "2015"
+    }
+  ],
+  "education": [
+    {
+      "degree": "B.Tech.",
+      "discipline": "Electrical and Electronic Engineering",
+      "institution": "Institute of Technical Education & Research (SOA University)",
+      "location": "Odisha, India",
+      "start_year": 2011,
+      "end_year": 2015
+    },
+    {
+      "program": "+2 Science",
+      "institution": "Naidu +2 Science College (CHSE Board)",
+      "location": "Odisha, India",
+      "start_year": 2009,
+      "end_year": 2011
+    }
+  ],
+  "certifications": [
+    "Infosys Global Agile Developer Certification",
+    "React Native",
+    "ReactJS",
+    "UX Design (Google)"
+  ],
+  "awards_recognition": [
+    "Nominated for Rising Star award (organization)",
+    "Certificate of merit for performance during training",
+    "Multiple client recognitions",
+    "Finalist in Automated Robotics at IIT Kharagpur (2013)",
+    "Certificate of Merit for Best Position in Odisha State Talent Scholarship Examination (2003)",
+    "Event Lead for ITER Robotic Club and SOA Space Techno Club"
+  ],
+  "publications": [
+    {
+      "title": "A GSM, WSN and Embedded Web Server Architecture for Internet Based Kitchen Monitoring (IoT)",
+      "venue": "IEEE Xplore",
+      "year": 2015,
+      "type": "Conference Paper"
+    }
+  ],
+  "most_proud_of": [
+    "Australian Open 2020 – Official mobile application",
+    "India Government’s complex indirect tax implementation portal",
+    "IEEE Xplore publication on IoT kitchen monitoring"
+  ],
+  "responsibility_patterns": [
+    "Requirements analysis, estimation, and system requirement documentation",
+    "High-level design and application architecture participation",
+    "Development, code reviews, unit testing, and documentation",
+    "Validation including functional, integration, system, UX, and performance testing",
+    "Production support, SLA adherence, and stakeholder communication",
+    "Onsite coordination, KT sessions, and transition/shadow support"
+  ],
+  "timeline": [
+    {
+      "period": "2015-10 to 2016-02",
+      "company": "Infosys",
+      "role": "Systems Engineer Trainee",
+      "location": "Mysore, India"
+    },
+    {
+      "period": "2016-02 to 2017-10",
+      "company": "Infosys",
+      "role": "Systems Engineer",
+      "location": "India"
+    },
+    {
+      "period": "2017-10 to 2018-12",
+      "company": "Infosys",
+      "role": "Senior Systems Engineer",
+      "location": "India"
+    },
+    {
+      "period": "2019-04 to 2020-03",
+      "company": "Infosys",
+      "role": "Technology Analyst",
+      "location": "Australia"
+    },
+    {
+      "period": "2020-03 to 2022-10",
+      "company": "Infosys",
+      "role": "Technology Analyst",
+      "location": "Germany"
+    },
+    {
+      "period": "2022-10 to Present",
+      "company": "AGCO Corporation",
+      "role": "Web & Mobile Application Developer / Architect",
+      "location": "India"
+    }
+  ],
+  "derived": {
+    "approx_years_of_experience": 10,
+    "seniority": ["Senior Engineer", "Technology Analyst", "Architect"],
+    "industries": [
+      "Agriculture",
+      "Sports",
+      "E-commerce",
+      "Utilities",
+      "Government/Tax",
+      "IoT"
+    ],
+    "primary_tech_focus": [
+      "React Native",
+      "React",
+      "TypeScript",
+      "JavaScript",
+      "Redux/Redux-Saga"
+    ]
+  },
+  "data_quality": {
+    "notes": [
+      "Two resumes (attached_file:1 and attached_file:2) are duplicates with similar content and earlier career timeline.",
+      "attached_file:3 contains updated roles, links, and recent employer (AGCO)."
+    ],
+    "last_verified_sources": [
+      "attached_file:1",
+      "attached_file:2",
+      "attached_file:3"
+    ]
+  }
+}
