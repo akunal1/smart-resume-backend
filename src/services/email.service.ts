@@ -13,8 +13,20 @@ interface EmailPayload extends EmailRequest {
 
 // Create email transporter (supports both SMTP and OAuth2)
 const createEmailTransporter = () => {
+  console.log("=== Creating Email Transporter ===");
+
   // Try SMTP authentication first (simpler setup)
   if (config.EMAIL_USER && config.EMAIL_PASS) {
+    console.log("Using SMTP configuration with Gmail");
+    console.log("SMTP settings:", {
+      host: "smtp.gmail.com",
+      port: 587,
+      secure: false,
+      user: config.EMAIL_USER
+        ? `${config.EMAIL_USER.substring(0, 3)}***`
+        : "not set",
+    });
+
     return nodemailer.createTransport({
       host: "smtp.gmail.com",
       port: 587,
@@ -39,10 +51,27 @@ const createEmailTransporter = () => {
     !config.GOOGLE_CLIENT_SECRET ||
     !config.GOOGLE_REFRESH_TOKEN
   ) {
+    console.log("Missing OAuth2 credentials, cannot create transporter");
+    console.log("Available credentials:", {
+      hasGmailSender: !!config.GMAIL_SENDER,
+      hasGoogleClientId: !!config.GOOGLE_CLIENT_ID,
+      hasGoogleClientSecret: !!config.GOOGLE_CLIENT_SECRET,
+      hasGoogleRefreshToken: !!config.GOOGLE_REFRESH_TOKEN,
+    });
     throw new Error(
       "Email credentials not configured. Please set either EMAIL_USER/EMAIL_PASS for SMTP or GMAIL_SENDER/GOOGLE_CLIENT_ID/GOOGLE_CLIENT_SECRET/GOOGLE_REFRESH_TOKEN for OAuth2 in your environment variables."
     );
   }
+
+  console.log("Using OAuth2 configuration with Gmail");
+  console.log("OAuth2 settings:", {
+    user: config.GMAIL_SENDER
+      ? `${config.GMAIL_SENDER.substring(0, 3)}***`
+      : "not set",
+    hasClientId: !!config.GOOGLE_CLIENT_ID,
+    hasClientSecret: !!config.GOOGLE_CLIENT_SECRET,
+    hasRefreshToken: !!config.GOOGLE_REFRESH_TOKEN,
+  });
 
   return nodemailer.createTransport({
     service: "gmail",
@@ -60,22 +89,55 @@ const createEmailTransporter = () => {
 export const sendEmail = async (
   emailData: EmailPayload
 ): Promise<{ messageId: string }> => {
-  try {
-    const transporter = createEmailTransporter();
+  console.log("=== Email Service Debug Start ===");
+  console.log("Email data received:", {
+    to: emailData.to,
+    subject: emailData.subject,
+    hasIcsAttachment: !!emailData.icsAttachment,
+    userName: emailData.userName,
+  });
 
-    // Verify transporter connection
-    await transporter.verify();
+  // Log environment configuration (without sensitive data)
+  console.log("Environment config check:", {
+    hasEmailUser: !!config.EMAIL_USER,
+    hasEmailPass: !!config.EMAIL_PASS,
+    hasGmailSender: !!config.GMAIL_SENDER,
+    hasGoogleClientId: !!config.GOOGLE_CLIENT_ID,
+    hasGoogleClientSecret: !!config.GOOGLE_CLIENT_SECRET,
+    hasGoogleRefreshToken: !!config.GOOGLE_REFRESH_TOKEN,
+    nodeEnv: config.NODE_ENV,
+  });
+
+  try {
+    console.log("Creating email transporter...");
+    const transporter = createEmailTransporter();
+    console.log("Transporter created successfully");
+
+    // Verify transporter connection with timeout
+    console.log("Verifying SMTP connection...");
+    const verifyPromise = transporter.verify();
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(
+        () => reject(new Error("Connection verification timeout after 30s")),
+        30000
+      )
+    );
+
+    await Promise.race([verifyPromise, timeoutPromise]);
     console.log("SMTP connection verified successfully");
 
     // Format email content
+    console.log("Formatting email content...");
     const subject =
       emailData.subject || "Summary of Virtual Assistance Discussion";
     const htmlContent = formatEmailContent(emailData);
     const textContent = formatEmailText(emailData);
+    console.log("Email content formatted");
 
     // Prepare attachments
     const attachments = [];
     if (emailData.icsAttachment) {
+      console.log("Adding ICS attachment...");
       attachments.push({
         filename: "meeting.ics",
         content: Buffer.from(emailData.icsAttachment, "base64"),
@@ -92,11 +154,29 @@ export const sendEmail = async (
       attachments,
     };
 
+    console.log("Mail options prepared:", {
+      from: mailOptions.from,
+      to: mailOptions.to,
+      subject: mailOptions.subject,
+      attachmentsCount: attachments.length,
+    });
+
+    console.log("Sending email...");
     const result = await transporter.sendMail(mailOptions);
     console.log("Email sent successfully:", result.messageId);
+    console.log("=== Email Service Debug End (Success) ===");
     return { messageId: result.messageId };
   } catch (error) {
-    console.error("Email sending failed:", error);
+    console.error("=== Primary Email Sending Failed ===");
+    const err = error as any;
+    console.error("Error type:", err.constructor?.name || "Unknown");
+    console.error("Error code:", err.code || "No code");
+    console.error("Error message:", err.message || "No message");
+    console.error("Error stack:", err.stack || "No stack");
+    console.error(
+      "Full error object:",
+      JSON.stringify(err, Object.getOwnPropertyNames(err))
+    );
 
     // If SMTP fails, try OAuth2 if available
     if (
@@ -105,8 +185,9 @@ export const sendEmail = async (
       config.GOOGLE_CLIENT_SECRET &&
       config.GOOGLE_REFRESH_TOKEN
     ) {
-      console.log("SMTP failed, attempting OAuth2...");
+      console.log("=== Attempting OAuth2 Fallback ===");
       try {
+        console.log("Creating OAuth2 transporter...");
         const oauth2Transporter = nodemailer.createTransport({
           service: "gmail",
           auth: {
@@ -117,6 +198,10 @@ export const sendEmail = async (
             refreshToken: config.GOOGLE_REFRESH_TOKEN,
           },
         });
+
+        console.log("OAuth2 transporter created, verifying connection...");
+        await oauth2Transporter.verify();
+        console.log("OAuth2 connection verified successfully");
 
         const subject =
           emailData.subject || "Summary of Virtual Assistance Discussion";
@@ -141,16 +226,44 @@ export const sendEmail = async (
           attachments,
         };
 
+        console.log("Sending email via OAuth2...");
         const result = await oauth2Transporter.sendMail(mailOptions);
         console.log("Email sent via OAuth2:", result.messageId);
+        console.log("=== Email Service Debug End (OAuth2 Success) ===");
         return { messageId: result.messageId };
       } catch (oauth2Error) {
-        console.error("OAuth2 email sending also failed:", oauth2Error);
-        throw new Error("Failed to send email via both SMTP and OAuth2");
+        console.error("=== OAuth2 Email Sending Also Failed ===");
+        const oauthErr = oauth2Error as any;
+        console.error(
+          "OAuth2 Error type:",
+          oauthErr.constructor?.name || "Unknown"
+        );
+        console.error("OAuth2 Error code:", oauthErr.code || "No code");
+        console.error(
+          "OAuth2 Error message:",
+          oauthErr.message || "No message"
+        );
+        console.error(
+          "OAuth2 Full error:",
+          JSON.stringify(oauthErr, Object.getOwnPropertyNames(oauthErr))
+        );
+        console.log("=== Email Service Debug End (Total Failure) ===");
+        throw new Error(
+          `Failed to send email via both SMTP and OAuth2. SMTP Error: ${err.message}, OAuth2 Error: ${oauthErr.message}`
+        );
       }
+    } else {
+      console.log("OAuth2 credentials not available, cannot attempt fallback");
+      console.log("Available OAuth2 config:", {
+        hasGmailSender: !!config.GMAIL_SENDER,
+        hasGoogleClientId: !!config.GOOGLE_CLIENT_ID,
+        hasGoogleClientSecret: !!config.GOOGLE_CLIENT_SECRET,
+        hasGoogleRefreshToken: !!config.GOOGLE_REFRESH_TOKEN,
+      });
     }
 
-    throw new Error("Failed to send email");
+    console.log("=== Email Service Debug End (Failure) ===");
+    throw new Error(`Failed to send email: ${err.message}`);
   }
 };
 
