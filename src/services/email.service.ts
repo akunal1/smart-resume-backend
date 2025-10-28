@@ -16,11 +16,19 @@ const createEmailTransporter = () => {
   // Try SMTP authentication first (simpler setup)
   if (config.EMAIL_USER && config.EMAIL_PASS) {
     return nodemailer.createTransport({
-      service: "gmail",
+      host: "smtp.gmail.com",
+      port: 587,
+      secure: false, // true for 465, false for other ports
       auth: {
         user: config.EMAIL_USER,
         pass: config.EMAIL_PASS,
       },
+      tls: {
+        rejectUnauthorized: false,
+      },
+      connectionTimeout: 60000, // 60 seconds
+      greetingTimeout: 30000, // 30 seconds
+      socketTimeout: 60000, // 60 seconds
     });
   }
 
@@ -52,38 +60,96 @@ const createEmailTransporter = () => {
 export const sendEmail = async (
   emailData: EmailPayload
 ): Promise<{ messageId: string }> => {
-  const transporter = createEmailTransporter();
-
-  // Format email content
-  const subject =
-    emailData.subject || "Summary of Virtual Assistance Discussion";
-  const htmlContent = formatEmailContent(emailData);
-  const textContent = formatEmailText(emailData);
-
-  // Prepare attachments
-  const attachments = [];
-  if (emailData.icsAttachment) {
-    attachments.push({
-      filename: "meeting.ics",
-      content: Buffer.from(emailData.icsAttachment, "base64"),
-      contentType: "text/calendar",
-    });
-  }
-
-  const mailOptions = {
-    from: config.EMAIL_USER || config.GMAIL_SENDER,
-    to: emailData.to,
-    subject,
-    text: textContent,
-    html: htmlContent,
-    attachments,
-  };
-
   try {
+    const transporter = createEmailTransporter();
+
+    // Verify transporter connection
+    await transporter.verify();
+    console.log("SMTP connection verified successfully");
+
+    // Format email content
+    const subject =
+      emailData.subject || "Summary of Virtual Assistance Discussion";
+    const htmlContent = formatEmailContent(emailData);
+    const textContent = formatEmailText(emailData);
+
+    // Prepare attachments
+    const attachments = [];
+    if (emailData.icsAttachment) {
+      attachments.push({
+        filename: "meeting.ics",
+        content: Buffer.from(emailData.icsAttachment, "base64"),
+        contentType: "text/calendar",
+      });
+    }
+
+    const mailOptions = {
+      from: config.EMAIL_USER || config.GMAIL_SENDER,
+      to: emailData.to,
+      subject,
+      text: textContent,
+      html: htmlContent,
+      attachments,
+    };
+
     const result = await transporter.sendMail(mailOptions);
+    console.log("Email sent successfully:", result.messageId);
     return { messageId: result.messageId };
   } catch (error) {
     console.error("Email sending failed:", error);
+
+    // If SMTP fails, try OAuth2 if available
+    if (
+      config.GMAIL_SENDER &&
+      config.GOOGLE_CLIENT_ID &&
+      config.GOOGLE_CLIENT_SECRET &&
+      config.GOOGLE_REFRESH_TOKEN
+    ) {
+      console.log("SMTP failed, attempting OAuth2...");
+      try {
+        const oauth2Transporter = nodemailer.createTransport({
+          service: "gmail",
+          auth: {
+            type: "OAuth2",
+            user: config.GMAIL_SENDER,
+            clientId: config.GOOGLE_CLIENT_ID,
+            clientSecret: config.GOOGLE_CLIENT_SECRET,
+            refreshToken: config.GOOGLE_REFRESH_TOKEN,
+          },
+        });
+
+        const subject =
+          emailData.subject || "Summary of Virtual Assistance Discussion";
+        const htmlContent = formatEmailContent(emailData);
+        const textContent = formatEmailText(emailData);
+
+        const attachments = [];
+        if (emailData.icsAttachment) {
+          attachments.push({
+            filename: "meeting.ics",
+            content: Buffer.from(emailData.icsAttachment, "base64"),
+            contentType: "text/calendar",
+          });
+        }
+
+        const mailOptions = {
+          from: config.GMAIL_SENDER,
+          to: emailData.to,
+          subject,
+          text: textContent,
+          html: htmlContent,
+          attachments,
+        };
+
+        const result = await oauth2Transporter.sendMail(mailOptions);
+        console.log("Email sent via OAuth2:", result.messageId);
+        return { messageId: result.messageId };
+      } catch (oauth2Error) {
+        console.error("OAuth2 email sending also failed:", oauth2Error);
+        throw new Error("Failed to send email via both SMTP and OAuth2");
+      }
+    }
+
     throw new Error("Failed to send email");
   }
 };

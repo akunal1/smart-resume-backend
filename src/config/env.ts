@@ -30,6 +30,9 @@ const envSchema = z.object({
   // SMTP Configuration (alternative to OAuth2)
   EMAIL_USER: z.string().optional(),
   EMAIL_PASS: z.string().optional(),
+  // SendGrid Configuration (recommended for production)
+  SENDGRID_API_KEY: z.string().optional(),
+  SENDGRID_FROM_EMAIL: z.string().optional(),
   // JWT Configuration
   JWT_SECRET: z.string().optional(),
 });
