@@ -1,4 +1,5 @@
 import nodemailer from "nodemailer";
+import sgMail from "@sendgrid/mail";
 import {
   EmailRequest,
   MeetingRequest,
@@ -85,6 +86,61 @@ const createEmailTransporter = () => {
   });
 };
 
+// SendGrid email sending (more reliable for cloud deployments)
+const sendEmailWithSendGrid = async (
+  emailData: EmailPayload
+): Promise<{ messageId: string }> => {
+  if (!config.SENDGRID_API_KEY || !config.SENDGRID_FROM_EMAIL) {
+    throw new Error("SendGrid credentials not configured");
+  }
+
+  console.log("=== Using SendGrid Email Service ===");
+  sgMail.setApiKey(config.SENDGRID_API_KEY);
+
+  const subject =
+    emailData.subject || "Summary of Virtual Assistance Discussion";
+  const htmlContent = formatEmailContent(emailData);
+  const textContent = formatEmailText(emailData);
+
+  const attachments = [];
+  if (emailData.icsAttachment) {
+    console.log("Adding ICS attachment to SendGrid email...");
+    attachments.push({
+      filename: "meeting.ics",
+      content: emailData.icsAttachment,
+      type: "text/calendar",
+      disposition: "attachment",
+    });
+  }
+
+  const msg = {
+    to: emailData.to,
+    from: config.SENDGRID_FROM_EMAIL,
+    subject,
+    text: textContent,
+    html: htmlContent,
+    attachments,
+  };
+
+  console.log("SendGrid message prepared:", {
+    to: msg.to,
+    from: msg.from,
+    subject: msg.subject,
+    attachmentsCount: attachments.length,
+  });
+
+  try {
+    const response = await sgMail.sendMultiple(msg);
+    console.log("SendGrid email sent successfully:", response[0].statusCode);
+    return {
+      messageId: response[0].headers["x-message-id"] || "sendgrid-success",
+    };
+  } catch (error) {
+    console.error("SendGrid email failed:", error);
+    throw error;
+  }
+};
+
 // Send email with AI summary and conversation history
 export const sendEmail = async (
   emailData: EmailPayload
@@ -105,26 +161,53 @@ export const sendEmail = async (
     hasGoogleClientId: !!config.GOOGLE_CLIENT_ID,
     hasGoogleClientSecret: !!config.GOOGLE_CLIENT_SECRET,
     hasGoogleRefreshToken: !!config.GOOGLE_REFRESH_TOKEN,
+    hasSendGridApiKey: !!config.SENDGRID_API_KEY,
+    hasSendGridFromEmail: !!config.SENDGRID_FROM_EMAIL,
     nodeEnv: config.NODE_ENV,
   });
+
+  // Try SendGrid first if available (more reliable for cloud deployments)
+  if (config.SENDGRID_API_KEY && config.SENDGRID_FROM_EMAIL) {
+    try {
+      console.log("Attempting email via SendGrid...");
+      const result = await sendEmailWithSendGrid(emailData);
+      console.log("=== Email Service Debug End (SendGrid Success) ===");
+      return result;
+    } catch (sendGridError) {
+      console.error("SendGrid failed, falling back to SMTP:", sendGridError);
+    }
+  } else {
+    console.log("SendGrid not configured, using SMTP...");
+  }
 
   try {
     console.log("Creating email transporter...");
     const transporter = createEmailTransporter();
     console.log("Transporter created successfully");
 
-    // Verify transporter connection with timeout
-    console.log("Verifying SMTP connection...");
-    const verifyPromise = transporter.verify();
-    const timeoutPromise = new Promise((_, reject) =>
-      setTimeout(
-        () => reject(new Error("Connection verification timeout after 30s")),
-        30000
-      )
-    );
+    // Verify transporter connection with timeout (skip in production due to cloud platform restrictions)
+    if (config.NODE_ENV === "development") {
+      console.log("Verifying SMTP connection (development mode only)...");
+      const verifyPromise = transporter.verify();
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(
+          () => reject(new Error("Connection verification timeout after 30s")),
+          30000
+        )
+      );
 
-    await Promise.race([verifyPromise, timeoutPromise]);
-    console.log("SMTP connection verified successfully");
+      try {
+        await Promise.race([verifyPromise, timeoutPromise]);
+        console.log("SMTP connection verified successfully");
+      } catch (verifyError) {
+        console.warn("SMTP verification failed in development:", verifyError);
+        console.log("Proceeding without verification...");
+      }
+    } else {
+      console.log(
+        "Skipping SMTP verification in production (cloud platform may block verification)"
+      );
+    }
 
     // Format email content
     console.log("Formatting email content...");
