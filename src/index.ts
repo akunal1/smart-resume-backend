@@ -23,6 +23,7 @@ const allowedOrigins = [
   "http://localhost:5174",
   "http://localhost:3000",
   "https://avinash-snowy.vercel.app",
+  "https://avinash-nayak.vercel.app",
   "https://avinashnayak.in",
 ];
 
